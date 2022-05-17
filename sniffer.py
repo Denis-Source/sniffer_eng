@@ -2,30 +2,30 @@ import socket
 import struct
 import re
 
-from frames.ipv4 import IPv4Frame
-from frames.udp import UDPFrame
-from frames.tcp import TCPFrame
+from packets.ipv4 import IPv4Packet
+from packets.udp import UDPPacket
+from packets.tcp import TCPPacket
 
 
-class Sniffer(object):
+class Sniffer:
     """
     Sniffer class
-    Captures IPv4 frames
+    Captures IPv4 packets
 
     Attributes:
-        host : IPv4 address used for frame capturing; str;
-        host_name : name of the computer used for frame capturing; str;
+        host : IPv4 address used for packet capturing; str;
+        host_name : name of the computer used for packet capturing; str;
         socket : socket library class;
 
     Methods:
         sniff_once
         sniff
-        save_frames
+        save_packet
         seek_domains
 
     Static methods:
         get_mac_addr
-        ethernet_frame
+        ethernet_packet
     """
 
     def __init__(self, ip="AUTO"):
@@ -52,7 +52,7 @@ class Sniffer(object):
         return ":".join(bytes_str).upper()
 
     @staticmethod
-    def ethernet_frame(data):
+    def ethernet_packet(data):
         """
         Converts a byte array into a MAC-address source, MAC-address destination and IPv4 protocol
 
@@ -64,33 +64,33 @@ class Sniffer(object):
 
     def sniff_once(self, to_print):
         """
-        Captures a single frame
-        Returns a IPv4Frame class frame (
-            If it`s a TCP - returns UDPFrame class frame
-            If it`s a UDP - returns TCPFrame class frame
+        Captures a single packet
+        Returns a IPv4Packet class packet (
+            If it`s a TCP - returns UDPPacket class packet
+            If it`s a UDP - returns TCPPacket class packet
                                         )
 
         :param to_print: bool
-        :return: IPv4Frame
+        :return: IPv4Packet
         """
-        frame, addr = self.socket.recvfrom(65536)
-        datagram = IPv4Frame(frame)
+        packet, addr = self.socket.recvfrom(65536)
+        datagram = IPv4Packet(packet)
 
         if datagram.proto_str == "TCP":
-            datagram = TCPFrame(frame)
+            datagram = TCPPacket(packet)
         if datagram.proto_str == "UDP":
-            datagram = UDPFrame(frame)
+            datagram = UDPPacket(packet)
         if to_print:
             print(datagram)
         return datagram
 
-    def sniff(self, num_of_frames=1, is_inf=False, to_print=False):
+    def sniff(self, num_of_packets=1, is_inf=False, to_print=False):
         """
-        Captures frames
+        Captures packets
 
-        :param num_of_frames: int amount of frames that will be captured
-        :param is_inf: bool to capture frames infinitely
-        :param to_print: bool to print captured frames
+        :param num_of_packets: int amount of packets that will be captured
+        :param is_inf: bool to capture packets infinitely
+        :param to_print: bool to print captured packets
         :return: None
         """
         if to_print:
@@ -99,23 +99,23 @@ class Sniffer(object):
             while True:
                 self.sniff_once(to_print)
         else:
-            for i in range(num_of_frames):
+            for i in range(num_of_packets):
                 self.sniff_once(to_print)
 
-    def save_frames(self, file_name="sniff.txt", num_of_frames=1, is_inf=False, to_print=False):
+    def save_packets(self, file_name="sniff.txt", num_of_packets=1, is_inf=False, to_print=False):
         """
-        Captures frames and saves them in a specified file
+        Captures packets and saves them in a specified file
 
         :param file_name: str name of the file to store into
-        :param num_of_frames: int amount captured frames
-        :param is_inf: bool to capture frames infinitely
-        :param to_print: bool to print frames
+        :param num_of_packets: int amount captured packets
+        :param is_inf: bool to capture packets infinitely
+        :param to_print: bool to print packets
         :return: None
         """
         if to_print:
-            print(f"Saving frames from {self.host_name} at {self.host}:")
+            print(f"Saving packets from {self.host_name} at {self.host}:")
         file = open(file_name, "w")
-        file.write(f"Saved frames from {self.host_name} at {self.host}:\n")
+        file.write(f"Saved packets from {self.host_name} at {self.host}:\n")
         file.close()
         if is_inf:
             while True:
@@ -126,7 +126,7 @@ class Sniffer(object):
                 file.close()
 
         else:
-            for i in range(num_of_frames):
+            for i in range(num_of_packets):
                 datagram = self.sniff_once(to_print)
                 file = open(file_name, "a")
                 file.write(str(datagram))
@@ -136,13 +136,13 @@ class Sniffer(object):
     def seek_domains(self):
         """
         Tries to find a domain in DNS request
-        Parses frame payload to find URLs
+        Parses packet payload to find URLs
         Prints the on the screen
 
         :return: None
         """
         while True:
-            ascii_payload = IPv4Frame.bytes_to_ascii(self.sniff_once(False).payload)
+            ascii_payload = IPv4Packet.bytes_to_ascii(self.sniff_once(False).payload)
             exp = re.compile(r"[a-z]{5,}\.[a-z]{2,}")
             res = exp.findall(ascii_payload)
             if res:

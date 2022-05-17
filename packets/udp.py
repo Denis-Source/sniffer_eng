@@ -1,23 +1,23 @@
 import struct
 
-from frames.ipv4 import IPv4Frame
+from packets.ipv4 import IPv4Packet
 
 
-class UDPFrame(IPv4Frame):
+class UDPPacket(IPv4Packet):
     """
-    UDP frame class.
+    UDP packet class.
     Arguments:
     raw_data - bytes input; bytes;
-    Inherits IPv4Frame class.
+    Inherits IPv4Packet class.
     Inherited Attributes:
-        id_counter : counter variable; tracks how many of the frames were created; int;
+        id_counter : counter variable; tracks how many of the packets were created; int;
         proto : protocol version; int;
         proto_str : protocol version name; str;
         ttl : time to live; int;
-        src : frame source; IPv4 format; str;
-        target : frame destination; IPv4 format; str;
-        time : frame capture time; asctime format; str;
-        data : bytes array of the frame; bytes;
+        src : packet source; IPv4 format; str;
+        target : packet destination; IPv4 format; str;
+        time : packet capture time; asctime format; str;
+        data : bytes array of the packet; bytes;
         payload : payload data; bytes;
 
     Attributes:
@@ -27,16 +27,16 @@ class UDPFrame(IPv4Frame):
     """
 
     def __init__(self, raw_data):
-        IPv4Frame.__init__(self, raw_data)
-        IPv4Frame.id_counter -= 1
+        IPv4Packet.__init__(self, raw_data)
+        IPv4Packet.id_counter -= 1
         self.src_port, self.dest_port, self.size = struct.unpack("! H H 2x H", raw_data[:8])
 
     def __str__(self):
         """
-        Converts frame information into readable format
+        Converts packet information into readable format
 
         Has the following format:
-            Ethernet Frame: #1
+            Ethernet Packet: #1
             Time: Tue Dec 0 00:01:28 2019
             TTL: 57 Protocol: TCP
             Source: 162.159.130.234:17664, Destination: 192.168.0.104:84
@@ -47,7 +47,7 @@ class UDPFrame(IPv4Frame):
         :return: str
         """
 
-        return f"\nEthernet Frame #{self.id_counter}\nTime: {self.time}\n" \
+        return f"\nEthernet Packet #{self.id_counter}\nTime: {self.time}\n" \
                f"TTL: {self.ttl} Protocol: {self.proto_str}\n" \
                f"Source: {self.src}:{self.src_port}, Destination: {self.target}:{self.dest_port}\n" \
-               f"Data: \n{IPv4Frame.bytes_to_hex(self.payload)}"
+               f"Data: \n{IPv4Packet.bytes_to_hex(self.payload)}"

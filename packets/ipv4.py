@@ -2,22 +2,22 @@ import struct
 import time
 
 
-class IPv4Frame(object):
+class IPv4Packet:
     """
-    Frame class that is used for IPv4 protocol frame.
+    Packet class that is used for IPv4 protocol packet.
     Arguments:
-    raw_data - used for the frame conversion; bytes.
+    raw_data - used for the packet conversion; bytes.
 
     Attributes:
-        id_counter : counter variable; tracks how many of the frames were created; int;
+        id_counter : counter variable; tracks how many of the packets were created; int;
         proto : protocol version; int;
         proto_str : protocol version name; str;
         ttl : time to live; int;
-        src : frame source; IPv4 format; str;
-        target : frame destination; IPv4 format; str;
-        time : frame capture time; asctime format; str;
-        data : bytes array of the frame bytes;
-        payload : data that are stored in the frame as a payload; bytes;
+        src : packet source; IPv4 format; str;
+        target : packet destination; IPv4 format; str;
+        time : packet capture time; asctime format; str;
+        data : bytes array of the packet bytes;
+        payload : data that are stored in the packet as a payload; bytes;
 
     Static methods:
         ipv4_addr_conv(addr) :
@@ -31,7 +31,7 @@ class IPv4Frame(object):
     id_counter = -1
 
     def __init__(self, raw_data):
-        IPv4Frame.id_counter += 1
+        IPv4Packet.id_counter += 1
 
         self.data = raw_data
         version_header_length = raw_data[0]
@@ -42,27 +42,27 @@ class IPv4Frame(object):
         self.src = self.ipv4_addr_conv(src)
         self.target = self.ipv4_addr_conv(target)
         self.payload = raw_data[header_length:]
-        self.id_counter = IPv4Frame.id_counter
+        self.id_counter = IPv4Packet.id_counter
         self.proto_str = self.protocol_ver(self.proto)
         self.time = time.asctime()
 
     def __str__(self):
         """
-        Returns frame information in readable format
+        Returns packet information in readable format
 
         :return: str
         Return string has the following format:
-            Ethernet Frame: #1146
+            Ethernet Packet: #1146
             Time: 	Sun Dec  8 16:35:40 2019
             TTL: 1 Protocol: IGMP
             Source: 192.168.0.104, Destination: 224.0.0.2
             Data:
             17 00 08 03 E0 00 00 FC
         """
-        return f"\nEthernet Frame: #{self.id_counter}\nTime: {self.time}\n" \
+        return f"\nEthernet Packet: #{self.id_counter}\nTime: {self.time}\n" \
                f"TTL: {self.ttl} Protocol: {self.proto_str}\n" \
                f"Source: {self.src}, Destination: {self.target}\n" \
-               f"Data: \n{IPv4Frame.bytes_to_hex(self.payload)}"
+               f"Data: \n{IPv4Packet.bytes_to_hex(self.payload)}"
 
     @staticmethod
     def ipv4_addr_conv(addr):
