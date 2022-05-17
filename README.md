@@ -17,7 +17,7 @@ To start the application, simply run `main.py` file:
 ```shell
 python main.py
 ```
-> **IT IS IMPORTANT** to run the application with administrative privileges.
+> **IT IS IMPORTANT** to run the application with administrative privileges!
 
 ## Showcase
 When run in the default configuration, the application has the following output:
