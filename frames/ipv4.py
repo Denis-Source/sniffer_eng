@@ -2,9 +2,9 @@ import struct
 import time
 
 
-class IPv4Packet(object):
+class IPv4Frame(object):
     """
-    Frame class that are used for IPv4 protocols.
+    Frame class that is used for IPv4 protocol frame.
     Arguments:
     raw_data - used for the frame conversion; bytes.
 
@@ -31,7 +31,7 @@ class IPv4Packet(object):
     id_counter = -1
 
     def __init__(self, raw_data):
-        IPv4Packet.id_counter += 1
+        IPv4Frame.id_counter += 1
 
         self.data = raw_data
         version_header_length = raw_data[0]
@@ -42,7 +42,7 @@ class IPv4Packet(object):
         self.src = self.ipv4_addr_conv(src)
         self.target = self.ipv4_addr_conv(target)
         self.payload = raw_data[header_length:]
-        self.id_counter = IPv4Packet.id_counter
+        self.id_counter = IPv4Frame.id_counter
         self.proto_str = self.protocol_ver(self.proto)
         self.time = time.asctime()
 
@@ -52,16 +52,17 @@ class IPv4Packet(object):
 
         :return: str
         Return string has the following format:
-            Ethernet Frame: #1146 Time: 	Sun Dec  8 16:35:40 2019
+            Ethernet Frame: #1146
+            Time: 	Sun Dec  8 16:35:40 2019
             TTL: 1 Protocol: IGMP
             Source: 192.168.0.104, Destination: 224.0.0.2
             Data:
             17 00 08 03 E0 00 00 FC
         """
-        return f"\nEthernet Frame: #{self.id_counter} Time: \t{self.time}\n" \
+        return f"\nEthernet Frame: #{self.id_counter}\nTime: {self.time}\n" \
                f"TTL: {self.ttl} Protocol: {self.proto_str}\n" \
                f"Source: {self.src}, Destination: {self.target}\n" \
-               f"Data: \n{IPv4Packet.bytes_to_hex(self.payload)}"
+               f"Data: \n{IPv4Frame.bytes_to_hex(self.payload)}"
 
     @staticmethod
     def ipv4_addr_conv(addr):
@@ -118,3 +119,7 @@ class IPv4Packet(object):
             if i % rows == rows - 1:
                 return_str += "\n"
         return return_str
+
+    @staticmethod
+    def bytes_to_ascii(raw_data):
+        return raw_data.decode(encoding="utf-8", errors="replace")
