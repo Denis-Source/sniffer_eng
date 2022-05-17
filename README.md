@@ -1,5 +1,5 @@
 # sniffer_eng
-Captures IPV4 packets, displays its contents and information
+Captures IPv4 packets, displays its contents and information
 
 ## Installation
 
