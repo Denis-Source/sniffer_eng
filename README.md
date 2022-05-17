@@ -69,7 +69,9 @@ Captures wether the specified amount of packets or indefenetly:
 sniff()
 ```
 `num_of_packets` desired number of captured packets;
+
 `to_print` flag to display the captured packet on the console;
+
 `is_inf` flag to capture packets indefinitely.
 
 Saves packets in the specified file:
@@ -78,8 +80,11 @@ save_packets()
 ```
 
 `file_name` name of the file to store the captured packets;
+
 `num_of_packets` desired number of captured packets;
+
 `to_print` flag to display the captured packet on the console;
+
 `is_inf` flag to capture packets indefinitely.
 
 Displays visited urls:
